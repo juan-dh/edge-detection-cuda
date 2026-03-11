@@ -1,0 +1,35 @@
+INSTALL
+-------
+
+This project performs edge detection on the STL-10 dataset using CUDA and NPP on GPU.
+
+### 1. Set up the Python environment
+
+A virtual environment is recommended to manage the image download script.
+
+1. Create a virtual environment in your project directory (no sudo required):
+
+   python -m venv edge_env
+
+2. Activate the virtual environment:
+
+   source edge_env/bin/activate
+
+3. Install required libraries:
+
+   pip install -r requirements.txt
+
+---
+
+### 2. Download and prepare the data
+
+1. Run the Python script to download and save the images:
+
+   python download_data.py
+
+2. This will create the following folder:
+
+   data/images/
+
+   where all images will be saved in JPG or PPM format.  
+   Note: the `data/` folder is kept in the repository with a `.gitkeep` file, but its content (images) is ignored by Git.
