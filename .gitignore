@@ -5,7 +5,7 @@
 *.cubin
 *.fatbin
 
-edge_env/
+pyenv/
 
 data/*
 !data/.gitkeep
