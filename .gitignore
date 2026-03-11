@@ -4,3 +4,11 @@
 *.ptx
 *.cubin
 *.fatbin
+
+edge_env/
+
+data/*
+!data/.gitkeep
+
+bin/*
+!bin/.gitkeep
