@@ -3,21 +3,29 @@ INSTALL
 
 This project performs edge detection on the STL-10 dataset using CUDA and NPP on GPU.
 
-### 1. Set up the Python environment
+## 1. Run using Docker (recommended)
 
-A virtual environment is recommended to manage the image download script.
+This repository is designed to be run inside a Docker container, which provides a reproducible environment with CUDA, Python, and the required libraries already installed.
 
-1. Create a virtual environment in your project directory (no sudo required):
+### Build + start the container
 
-   python -m venv edge_env
+From the project root, run:
 
-2. Activate the virtual environment:
+```sh
+docker compose up --build
+```
 
-   source edge_env/bin/activate
+This will build the image (using `DockerFile`) and start a container named `cuda_project_workspace`.
 
-3. Install required libraries:
+### Run commands inside the container
 
-   pip install -r requirements.txt
+Once the container is running, you can execute commands inside it using:
+
+```sh
+docker compose exec npp-dev bash
+```
+
+The container automatically activates a Conda environment called `npp_env` that already includes the required Python packages.
 
 ---
 
@@ -25,11 +33,15 @@ A virtual environment is recommended to manage the image download script.
 
 1. Run the Python script to download and save the images:
 
-   python download_data.py
+   ```python
+   python3 download_data.py
+   ```
 
 2. This will create the following folder:
 
+   ```sh
    data/images/
+   ```
 
    where all images will be saved in JPG or PPM format.  
    Note: the `data/` folder is kept in the repository with a `.gitkeep` file, but its content (images) is ignored by Git.

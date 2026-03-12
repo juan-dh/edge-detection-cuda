@@ -1,0 +1,11 @@
+services:
+  npp-dev:
+    build: .
+    container_name: cuda_project_workspace
+    volumes:
+      - .:/root/edge-detection-cuda
+    working_dir: /root/edge-detection-cuda
+    stdin_open: true
+    tty: true
+    ipc: host
+    gpus: all
