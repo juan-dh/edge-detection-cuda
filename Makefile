@@ -1,7 +1,7 @@
 # Define the compiler and flags
 NVCC = /usr/local/cuda/bin/nvcc
 CXX = g++
-CXXFLAGS = -std=c++11 \
+CXXFLAGS = -std=c++17 \
 		   -I/usr/local/cuda/include \
 		   -Iinclude \
 		   -I/usr/local/cuda/samples/Common/UtilNPP
