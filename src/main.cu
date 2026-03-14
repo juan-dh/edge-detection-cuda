@@ -8,23 +8,34 @@
 #include <ImagesNPP.h>
 #include <Exceptions.h>
 
-int main(int argc, char **argv)
-{
-    std::filesystem::create_directory("data/outputs");
 
-    std::string sFilename = "data/images/img_0000.jpg";
-    npp::ImageCPU_8u_C1 oHostScr;
-    
-    // Convert color image to grayscale
+__host__ FIBITMAP *loadImage(std::string sFilename)
+{
     FREE_IMAGE_FORMAT eFormat = FreeImage_GetFileType(sFilename.c_str());
-    if (eFormat == FIF_UNKNOWN) eFormat = FreeImage_GetFIFFromFilename(sFilename.c_str());
     FIBITMAP *pBitmap = FreeImage_Load(eFormat, sFilename.c_str());
+    if (!pBitmap) {
+        std::cerr << "Failed to load image: " << sFilename << std::endl;
+        return nullptr;
+    }
+    return pBitmap;
+}
+
+__host__ FIBITMAP *convertToGray(FIBITMAP *pBitmap){
     FIBITMAP *pGray = FreeImage_ConvertToGreyscale(pBitmap);
-    FreeImage_Unload(pBitmap);
-    unsigned int w = FreeImage_GetWidth(pGray), h = FreeImage_GetHeight(pGray);
-    oHostScr = npp::ImageCPU_8u_C1(w, h);
-    unsigned int nSrcPitch = FreeImage_GetPitch(pGray);
-    const Npp8u *pSrcLine = FreeImage_GetBits(pGray) + nSrcPitch * (h - 1);
+    if (!pGray) {
+        std::cerr << "Failed to convert image to grayscale." << std::endl;
+        return nullptr;
+    }
+    return pGray;
+}
+
+
+__host__ void copyGrayBitmapToNPPImage(FIBITMAP *pGrayBitmap, npp::ImageCPU_8u_C1 &oHostScr)
+{
+    unsigned int w = FreeImage_GetWidth(pGrayBitmap);
+    unsigned int h = FreeImage_GetHeight(pGrayBitmap);
+    unsigned int nSrcPitch = FreeImage_GetPitch(pGrayBitmap);
+    const Npp8u *pSrcLine = FreeImage_GetBits(pGrayBitmap) + nSrcPitch * (h - 1);
     Npp8u *pDstLine = oHostScr.data();
     unsigned int nDstPitch = oHostScr.pitch();
     for (unsigned int i = 0; i < h; ++i) {
@@ -32,27 +43,108 @@ int main(int argc, char **argv)
         pSrcLine -= nSrcPitch;
         pDstLine += nDstPitch;
     }
-    FreeImage_Unload(pGray);
+}
+
+__host__ void applyFilter(const npp::ImageNPP_8u_C1 &oDeviceSrc, npp::ImageNPP_8u_C1 &oDeviceDst, NppiSize oSizeROI, NppStreamContext &ctx, std::string edgeType)
+{
+    NppStatus status;
     
+    if (edgeType == "horizontal") {
+        status = nppiFilterSobelHoriz_8u_C1R_Ctx(
+            oDeviceSrc.data(), oDeviceSrc.pitch(),
+            oDeviceDst.data(), oDeviceDst.pitch(),
+            oSizeROI, ctx);
+    } else if (edgeType == "vertical") {
+        status = nppiFilterSobelVert_8u_C1R_Ctx(
+            oDeviceSrc.data(), oDeviceSrc.pitch(),
+            oDeviceDst.data(), oDeviceDst.pitch(),
+            oSizeROI, ctx);
+    } else {
+        std::cerr << "Unknown edge type: " << edgeType << std::endl;
+        return;
+    }
+    
+    if (status != NPP_SUCCESS) {
+        std::cerr << "NPP error: " << status << std::endl;
+    }
+}
+
+int main(int argc, char **argv)
+{
+    // Parse command line arguments
+    std::string dataset = "stl10";
+    std::string edgeType = "horizontal";
+    
+    for (int i = 1; i < argc; ++i) {
+        std::string arg = argv[i];
+        if (arg == "--dataset" && i + 1 < argc) {
+            dataset = argv[++i];
+            if (dataset != "stl10" && dataset != "uscsipi") {
+                std::cerr << "Error: --dataset must be 'stl10' or 'uscsipi'" << std::endl;
+                return 1;
+            }
+        } else if (arg == "--edges" && i + 1 < argc) {
+            edgeType = argv[++i];
+            if (edgeType != "vertical" && edgeType != "horizontal") {
+                std::cerr << "Error: --edges must be 'vertical' or 'horizontal'" << std::endl;
+                return 1;
+            }
+        }
+    }
+    
+    std::cout << "Using dataset: " << dataset << std::endl;
+    std::cout << "Using edge type: " << edgeType << std::endl;
+
+    // Determine image path based on dataset
+    std::string imagePath;
+    if (dataset == "stl10") {
+        imagePath = "data/stl10_images/img_0000.jpg";
+    } else if (dataset == "uscsipi") {
+        imagePath = "data/uscsipi_images/img_0000.jpg";
+    }
+
+    std::string sFilename = imagePath;
+    
+    // Load the bitmap using FreeImage
+    FIBITMAP *pBitmap = loadImage(sFilename);
+
+    // Convert the bitmap to grayscale using FreeImage
+    FIBITMAP *pGrayBitmap = convertToGray(pBitmap);
+
+    // Create host NPP Images
+    unsigned int w = FreeImage_GetWidth(pGrayBitmap);
+    unsigned int h = FreeImage_GetHeight(pGrayBitmap);
+    npp::ImageCPU_8u_C1 oHostScr;
+    oHostScr = npp::ImageCPU_8u_C1(w, h);
+    npp::ImageCPU_8u_C1 oHostDst;
+    oHostDst = npp::ImageCPU_8u_C1(w, h);
+
+    // Copy the grayscale bitmap to the NPP image
+    copyGrayBitmapToNPPImage(pGrayBitmap, oHostScr);
+
+    // Unload the FreeImage bitmaps
+    FreeImage_Unload(pGrayBitmap);
+    FreeImage_Unload(pBitmap);
+    
+    // Create device NPP Images and ROI 
     npp::ImageNPP_8u_C1 oDeviceSrc(oHostScr);
+    npp::ImageNPP_8u_C1 oDeviceDst(oHostDst);
     NppiSize oSizeROI = {(int)oDeviceSrc.width(), (int)oDeviceSrc.height()};
-    npp::ImageNPP_8u_C1 oDeviceDst(oSizeROI.width, oSizeROI.height);
 
+    // Create NPP stream context and set it up with the current CUDA stream
     NppStreamContext ctx = {0};
-    NppStatus status = nppiFilterSobelHoriz_8u_C1R_Ctx(
-        oDeviceSrc.data(), oDeviceSrc.pitch(),
-        oDeviceDst.data(), oDeviceDst.pitch(),
-        oSizeROI, ctx);
 
-    if (status != NPP_SUCCESS) std::cout << "NPP error: " << status << std::endl;
+    // Apply the Sobel filter using NPP
+    applyFilter(oDeviceSrc, oDeviceDst, oSizeROI, ctx, edgeType);
 
-    npp::ImageCPU_8u_C1 oHostDst(oDeviceDst.size());
+    // Copy the result back to the host
     oDeviceDst.copyTo(oHostDst.data(), oHostDst.pitch());
 
-    std::string sResultFilename = std::string("data/outputs/sobel_") + "0000" + ".pgm";
+    // Save the result as a PGM image
+    std::filesystem::create_directory("data/outputs");
+    std::string sResultFilename = std::string("data/outputs/") + dataset + "_" + edgeType + "_" + "img_" + "0000" + ".pgm";
     saveImage(sResultFilename, oHostDst);
     std::cout << "Saved image: " << sResultFilename << std::endl;
-
 
     return 0;
 }
