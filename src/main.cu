@@ -73,7 +73,7 @@ __host__ void applyFilter(const npp::ImageNPP_8u_C1 &oDeviceSrc, npp::ImageNPP_8
 
 __host__ void parseArguments(int argc, char **argv, std::string &dataset, std::string &edgeType)
 {
-    dataset = "stl10";
+    dataset = "uscsipi";
     edgeType = "horizontal";
     
     for (int i = 1; i < argc; ++i) {
