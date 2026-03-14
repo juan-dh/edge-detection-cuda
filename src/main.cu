@@ -1,4 +1,6 @@
 #include <iostream>
+#include <vector>
+#include <algorithm>
 #include <string>
 #include <filesystem>
 #include <cuda_runtime.h>
@@ -110,10 +112,16 @@ int main(int argc, char **argv)
     std::filesystem::remove_all("data/outputs");
     std::filesystem::create_directory("data/outputs");
 
+    std::vector<std::filesystem::path> files;
+
     for (const auto &entry : std::filesystem::directory_iterator(inputDir)) {
-    
-        // Get the filename of the current image
-        std::string sFilename = entry.path().string();
+        files.push_back(entry.path());
+    }
+
+    std::sort(files.begin(), files.end());
+
+    for (const auto &path : files) {
+        std::string sFilename = path.string();
 
         // Load the bitmap using FreeImage
         FIBITMAP *pBitmap = loadImage(sFilename);
