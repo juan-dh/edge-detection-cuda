@@ -69,11 +69,10 @@ __host__ void applyFilter(const npp::ImageNPP_8u_C1 &oDeviceSrc, npp::ImageNPP_8
     }
 }
 
-int main(int argc, char **argv)
+__host__ void parseArguments(int argc, char **argv, std::string &dataset, std::string &edgeType)
 {
-    // Parse command line arguments
-    std::string dataset = "stl10";
-    std::string edgeType = "horizontal";
+    dataset = "stl10";
+    edgeType = "horizontal";
     
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
@@ -81,70 +80,84 @@ int main(int argc, char **argv)
             dataset = argv[++i];
             if (dataset != "stl10" && dataset != "uscsipi") {
                 std::cerr << "Error: --dataset must be 'stl10' or 'uscsipi'" << std::endl;
-                return 1;
+                exit(1);
             }
         } else if (arg == "--edges" && i + 1 < argc) {
             edgeType = argv[++i];
             if (edgeType != "vertical" && edgeType != "horizontal") {
                 std::cerr << "Error: --edges must be 'vertical' or 'horizontal'" << std::endl;
-                return 1;
+                exit(1);
             }
         }
     }
+}
+
+int main(int argc, char **argv)
+{
+    // Parse command line arguments
+    std::string dataset;
+    std::string edgeType;
+    parseArguments(argc, argv, dataset, edgeType);
     
     std::cout << "Using dataset: " << dataset << std::endl;
     std::cout << "Using edge type: " << edgeType << std::endl;
 
-    // Determine image path based on dataset
-    std::string imagePath;
-    if (dataset == "stl10") {
-        imagePath = "data/stl10_images/img_0000.jpg";
-    } else if (dataset == "uscsipi") {
-        imagePath = "data/uscsipi_images/img_0000.jpg";
-    }
+    std::string inputDir = (dataset == "stl10") ? "data/stl10_images" : "data/uscsipi_images";
 
-    std::string sFilename = imagePath;
-    
-    // Load the bitmap using FreeImage
-    FIBITMAP *pBitmap = loadImage(sFilename);
 
-    // Convert the bitmap to grayscale using FreeImage
-    FIBITMAP *pGrayBitmap = convertToGray(pBitmap);
-
-    // Create host NPP Images
-    unsigned int w = FreeImage_GetWidth(pGrayBitmap);
-    unsigned int h = FreeImage_GetHeight(pGrayBitmap);
-    npp::ImageCPU_8u_C1 oHostScr;
-    oHostScr = npp::ImageCPU_8u_C1(w, h);
-    npp::ImageCPU_8u_C1 oHostDst;
-    oHostDst = npp::ImageCPU_8u_C1(w, h);
-
-    // Copy the grayscale bitmap to the NPP image
-    copyGrayBitmapToNPPImage(pGrayBitmap, oHostScr);
-
-    // Unload the FreeImage bitmaps
-    FreeImage_Unload(pGrayBitmap);
-    FreeImage_Unload(pBitmap);
-    
-    // Create device NPP Images and ROI 
-    npp::ImageNPP_8u_C1 oDeviceSrc(oHostScr);
-    npp::ImageNPP_8u_C1 oDeviceDst(oHostDst);
-    NppiSize oSizeROI = {(int)oDeviceSrc.width(), (int)oDeviceSrc.height()};
-
-    // Create NPP stream context and set it up with the current CUDA stream
-    NppStreamContext ctx = {0};
-
-    // Apply the Sobel filter using NPP
-    applyFilter(oDeviceSrc, oDeviceDst, oSizeROI, ctx, edgeType);
-
-    // Copy the result back to the host
-    oDeviceDst.copyTo(oHostDst.data(), oHostDst.pitch());
-
-    // Save the result as a PGM image
+    // Clean directory and create output directory if it doesn't exist
+    int i = 0;
+    std::filesystem::remove_all("data/outputs");
     std::filesystem::create_directory("data/outputs");
-    std::string sResultFilename = std::string("data/outputs/") + dataset + "_" + edgeType + "_" + "img_" + "0000" + ".pgm";
-    saveImage(sResultFilename, oHostDst);
-    std::cout << "Saved image: " << sResultFilename << std::endl;
+
+    for (const auto &entry : std::filesystem::directory_iterator(inputDir)) {
+    
+        // Get the filename of the current image
+        std::string sFilename = entry.path().string();
+
+        // Load the bitmap using FreeImage
+        FIBITMAP *pBitmap = loadImage(sFilename);
+
+        // Convert the bitmap to grayscale using FreeImage
+        FIBITMAP *pGrayBitmap = convertToGray(pBitmap);
+
+        // Create host NPP Images
+        unsigned int w = FreeImage_GetWidth(pGrayBitmap);
+        unsigned int h = FreeImage_GetHeight(pGrayBitmap);
+        npp::ImageCPU_8u_C1 oHostScr;
+        oHostScr = npp::ImageCPU_8u_C1(w, h);
+        npp::ImageCPU_8u_C1 oHostDst;
+        oHostDst = npp::ImageCPU_8u_C1(w, h);
+
+        // Copy the grayscale bitmap to the NPP image
+        copyGrayBitmapToNPPImage(pGrayBitmap, oHostScr);
+
+        // Unload the FreeImage bitmaps
+        FreeImage_Unload(pGrayBitmap);
+        FreeImage_Unload(pBitmap);
+        
+        // Create device NPP Images and ROI 
+        npp::ImageNPP_8u_C1 oDeviceSrc(oHostScr);
+        npp::ImageNPP_8u_C1 oDeviceDst(oHostDst);
+        NppiSize oSizeROI = {(int)oDeviceSrc.width(), (int)oDeviceSrc.height()};
+
+        // Create NPP stream context and set it up with the current CUDA stream
+        NppStreamContext ctx = {0};
+
+        // Apply the Sobel filter using NPP
+        applyFilter(oDeviceSrc, oDeviceDst, oSizeROI, ctx, edgeType);
+
+        // Copy the result back to the host
+        oDeviceDst.copyTo(oHostDst.data(), oHostDst.pitch());
+
+        // Save the result as a PGM image
+        std::string sResultFilename = std::string("data/outputs/") + dataset + "_" + edgeType + "_" + "img_" + std::to_string(i) + ".pgm";
+        saveImage(sResultFilename, oHostDst);
+        std::cout << "Saved image: " << sResultFilename << std::endl;
+
+        i++;
+
+    }
 
     return 0;
 }
