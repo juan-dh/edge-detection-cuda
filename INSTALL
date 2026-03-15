@@ -1,47 +1,83 @@
 INSTALL
 -------
 
-This project performs edge detection on the STL-10 dataset using CUDA and NPP on GPU.
+This project performs edge detection using CUDA and NPP (NVIDIA Performance Primitives) on GPU.
+It supports two image datasets: STL-10 (Stanford) and USCSIPI (USC Signal and Image Processing Institute).
 
-## 1. Run using Docker (recommended)
+## Requirements
 
-This repository is designed to be run inside a Docker container, which provides a reproducible environment with CUDA, Python, and the required libraries already installed.
+- Docker
+- A CUDA-capable NVIDIA GPU
 
-### Build + start the container
+---
+
+## 1. Build the Docker image
 
 From the project root, run:
 
 ```sh
-docker compose up --build
+docker compose build
 ```
 
-This will build the image (using `DockerFile`) and start a container named `cuda_project_workspace`.
+This will build the image defined in `Dockerfile` using the base image `nvidia/cuda:13.1.1-cudnn-devel-ubuntu22.04`.
+The build may take several minutes the first time, as it downloads the base CUDA image and sets up the environment.
 
-### Run commands inside the container
-
-Once the container is running, you can execute commands inside it using:
-
-```sh
-docker compose exec npp-dev bash
-```
-
-The container automatically activates a Conda environment called `npp_env` that already includes the required Python packages.
+The image includes:
+- A Conda environment (`npp_env`) with all required Python packages
+- The `libfreeimage` library for image I/O
+- The **UtilsNPP** helper files from the [NVIDIA CUDA Samples](https://github.com/NVIDIA/cuda-samples) repository,
+  which is the NPP utility library suggested in the *CUDA at Scale for the Enterprise* course.
+  These are installed at `/usr/local/cuda/samples/`.
 
 ---
 
-### 2. Download and prepare the data
+## 2. Start the container
 
-1. Run the Python script to download and save the images:
+To launch an interactive shell inside the container, run:
 
-   ```python
-   python3 download_data.py
-   ```
+```sh
+docker compose run npp-dev
+```
 
-2. This will create the following folder:
+This starts the container `cuda_project_workspace` with the project directory mounted at `/root/edge-detection-cuda`.
+The Conda environment `npp_env` is activated automatically.
 
-   ```sh
-   data/images/
-   ```
+### Optional: attach with VS Code Dev Containers
 
-   where all images will be saved in JPG or PPM format.  
-   Note: the `data/` folder is kept in the repository with a `.gitkeep` file, but its content (images) is ignored by Git.
+If you use Visual Studio Code, you can attach to the running container using the
+[Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension:
+
+1. Open the Command Palette (`Ctrl+Shift+P` / `Cmd+Shift+P`).
+2. Select **Dev Containers: Attach to Running Container...**
+3. Choose `cuda_project_workspace`.
+
+This gives you a full IDE experience inside the container. It is optional — you can always interact
+with the container using standard Docker commands:
+
+```sh
+docker exec -it cuda_project_workspace bash
+```
+
+---
+
+## 3. Download and prepare the data (inside the container)
+
+Once inside the container, run the provided Python script to download and extract both datasets.
+This may take several minutes depending on your internet connection.
+
+```sh
+python3 download-data.py
+```
+
+This will download and process:
+
+- **STL-10** dataset from Stanford (~2.5 GB): saved as JPG images under `data/stl10_images/`
+- **USCSIPI** dataset from USC SIPI (`aerials` and `misc` subsets): saved under `data/uscsipi_images/`
+
+The `data/` folder is tracked in the repository (via `.gitkeep`), but its contents (images and archives) are ignored by Git.
+
+---
+
+## Execution
+
+Instructions for building and running the edge detection programs are in `README.md`.
