@@ -1,0 +1,89 @@
+Edge Detection Report
+=====================
+Dataset   : uscsipi
+Edge type : horizontal
+Images    : 77
+
+Input file                                        Output file                                               Time (ms)
+Total time   : 3175.36 ms
+Average/file : 41.24 ms
+---------------------------------------------------------------------------------------------------------------------
+
+data/uscsipi_images/img_0000.jpg                  data/outputs/uscsipi_horizontal_img_0.pgm                    853.24
+data/uscsipi_images/img_0001.jpg                  data/outputs/uscsipi_horizontal_img_1.pgm                     15.62
+data/uscsipi_images/img_0002.jpg                  data/outputs/uscsipi_horizontal_img_2.pgm                     10.88
+data/uscsipi_images/img_0003.jpg                  data/outputs/uscsipi_horizontal_img_3.pgm                     11.35
+data/uscsipi_images/img_0004.jpg                  data/outputs/uscsipi_horizontal_img_4.pgm                     11.25
+data/uscsipi_images/img_0005.jpg                  data/outputs/uscsipi_horizontal_img_5.pgm                     11.72
+data/uscsipi_images/img_0006.jpg                  data/outputs/uscsipi_horizontal_img_6.pgm                     10.71
+data/uscsipi_images/img_0007.jpg                  data/outputs/uscsipi_horizontal_img_7.pgm                     19.85
+data/uscsipi_images/img_0008.jpg                  data/outputs/uscsipi_horizontal_img_8.pgm                     12.84
+data/uscsipi_images/img_0009.jpg                  data/outputs/uscsipi_horizontal_img_9.pgm                     15.75
+data/uscsipi_images/img_0010.jpg                  data/outputs/uscsipi_horizontal_img_10.pgm                    14.18
+data/uscsipi_images/img_0011.jpg                  data/outputs/uscsipi_horizontal_img_11.pgm                    10.20
+data/uscsipi_images/img_0012.jpg                  data/outputs/uscsipi_horizontal_img_12.pgm                    45.98
+data/uscsipi_images/img_0013.jpg                  data/outputs/uscsipi_horizontal_img_13.pgm                    40.90
+data/uscsipi_images/img_0014.jpg                  data/outputs/uscsipi_horizontal_img_14.pgm                    45.60
+data/uscsipi_images/img_0015.jpg                  data/outputs/uscsipi_horizontal_img_15.pgm                    44.93
+data/uscsipi_images/img_0016.jpg                  data/outputs/uscsipi_horizontal_img_16.pgm                    45.64
+data/uscsipi_images/img_0017.jpg                  data/outputs/uscsipi_horizontal_img_17.pgm                    54.75
+data/uscsipi_images/img_0018.jpg                  data/outputs/uscsipi_horizontal_img_18.pgm                    59.27
+data/uscsipi_images/img_0019.jpg                  data/outputs/uscsipi_horizontal_img_19.pgm                    52.11
+data/uscsipi_images/img_0020.jpg                  data/outputs/uscsipi_horizontal_img_20.pgm                    50.59
+data/uscsipi_images/img_0021.jpg                  data/outputs/uscsipi_horizontal_img_21.pgm                    56.20
+data/uscsipi_images/img_0022.jpg                  data/outputs/uscsipi_horizontal_img_22.pgm                    49.86
+data/uscsipi_images/img_0023.jpg                  data/outputs/uscsipi_horizontal_img_23.pgm                    61.18
+data/uscsipi_images/img_0024.jpg                  data/outputs/uscsipi_horizontal_img_24.pgm                    51.53
+data/uscsipi_images/img_0025.jpg                  data/outputs/uscsipi_horizontal_img_25.pgm                    48.78
+data/uscsipi_images/img_0026.jpg                  data/outputs/uscsipi_horizontal_img_26.pgm                    45.01
+data/uscsipi_images/img_0027.jpg                  data/outputs/uscsipi_horizontal_img_27.pgm                    45.09
+data/uscsipi_images/img_0028.jpg                  data/outputs/uscsipi_horizontal_img_28.pgm                    43.81
+data/uscsipi_images/img_0029.jpg                  data/outputs/uscsipi_horizontal_img_29.pgm                    54.96
+data/uscsipi_images/img_0030.jpg                  data/outputs/uscsipi_horizontal_img_30.pgm                    47.63
+data/uscsipi_images/img_0031.jpg                  data/outputs/uscsipi_horizontal_img_31.pgm                    68.93
+data/uscsipi_images/img_0032.jpg                  data/outputs/uscsipi_horizontal_img_32.pgm                    68.38
+data/uscsipi_images/img_0033.jpg                  data/outputs/uscsipi_horizontal_img_33.pgm                    57.08
+data/uscsipi_images/img_0034.jpg                  data/outputs/uscsipi_horizontal_img_34.pgm                    60.23
+data/uscsipi_images/img_0035.jpg                  data/outputs/uscsipi_horizontal_img_35.pgm                    46.59
+data/uscsipi_images/img_0036.jpg                  data/outputs/uscsipi_horizontal_img_36.pgm                    62.64
+data/uscsipi_images/img_0037.jpg                  data/outputs/uscsipi_horizontal_img_37.pgm                   275.29
+data/uscsipi_images/img_0038.jpg                  data/outputs/uscsipi_horizontal_img_38.pgm                     3.93
+data/uscsipi_images/img_0039.jpg                  data/outputs/uscsipi_horizontal_img_39.pgm                     3.46
+data/uscsipi_images/img_0040.jpg                  data/outputs/uscsipi_horizontal_img_40.pgm                     7.92
+data/uscsipi_images/img_0041.jpg                  data/outputs/uscsipi_horizontal_img_41.pgm                     6.04
+data/uscsipi_images/img_0042.jpg                  data/outputs/uscsipi_horizontal_img_42.pgm                     4.46
+data/uscsipi_images/img_0043.jpg                  data/outputs/uscsipi_horizontal_img_43.pgm                     6.68
+data/uscsipi_images/img_0044.jpg                  data/outputs/uscsipi_horizontal_img_44.pgm                     3.06
+data/uscsipi_images/img_0045.jpg                  data/outputs/uscsipi_horizontal_img_45.pgm                     3.04
+data/uscsipi_images/img_0046.jpg                  data/outputs/uscsipi_horizontal_img_46.pgm                    12.15
+data/uscsipi_images/img_0047.jpg                  data/outputs/uscsipi_horizontal_img_47.pgm                    12.55
+data/uscsipi_images/img_0048.jpg                  data/outputs/uscsipi_horizontal_img_48.pgm                    12.73
+data/uscsipi_images/img_0049.jpg                  data/outputs/uscsipi_horizontal_img_49.pgm                    12.04
+data/uscsipi_images/img_0050.jpg                  data/outputs/uscsipi_horizontal_img_50.pgm                    12.67
+data/uscsipi_images/img_0051.jpg                  data/outputs/uscsipi_horizontal_img_51.pgm                     3.83
+data/uscsipi_images/img_0052.jpg                  data/outputs/uscsipi_horizontal_img_52.pgm                     3.48
+data/uscsipi_images/img_0053.jpg                  data/outputs/uscsipi_horizontal_img_53.pgm                     3.31
+data/uscsipi_images/img_0054.jpg                  data/outputs/uscsipi_horizontal_img_54.pgm                     3.15
+data/uscsipi_images/img_0055.jpg                  data/outputs/uscsipi_horizontal_img_55.pgm                     2.91
+data/uscsipi_images/img_0056.jpg                  data/outputs/uscsipi_horizontal_img_56.pgm                     2.96
+data/uscsipi_images/img_0057.jpg                  data/outputs/uscsipi_horizontal_img_57.pgm                    13.71
+data/uscsipi_images/img_0058.jpg                  data/outputs/uscsipi_horizontal_img_58.pgm                    10.18
+data/uscsipi_images/img_0059.jpg                  data/outputs/uscsipi_horizontal_img_59.pgm                    10.55
+data/uscsipi_images/img_0060.jpg                  data/outputs/uscsipi_horizontal_img_60.pgm                    41.61
+data/uscsipi_images/img_0061.jpg                  data/outputs/uscsipi_horizontal_img_61.pgm                    54.81
+data/uscsipi_images/img_0062.jpg                  data/outputs/uscsipi_horizontal_img_62.pgm                    14.94
+data/uscsipi_images/img_0063.jpg                  data/outputs/uscsipi_horizontal_img_63.pgm                    13.80
+data/uscsipi_images/img_0064.jpg                  data/outputs/uscsipi_horizontal_img_64.pgm                    19.17
+data/uscsipi_images/img_0065.jpg                  data/outputs/uscsipi_horizontal_img_65.pgm                    16.31
+data/uscsipi_images/img_0066.jpg                  data/outputs/uscsipi_horizontal_img_66.pgm                    16.63
+data/uscsipi_images/img_0067.jpg                  data/outputs/uscsipi_horizontal_img_67.pgm                    12.30
+data/uscsipi_images/img_0068.jpg                  data/outputs/uscsipi_horizontal_img_68.pgm                    13.85
+data/uscsipi_images/img_0069.jpg                  data/outputs/uscsipi_horizontal_img_69.pgm                    21.11
+data/uscsipi_images/img_0070.jpg                  data/outputs/uscsipi_horizontal_img_70.pgm                    16.16
+data/uscsipi_images/img_0071.jpg                  data/outputs/uscsipi_horizontal_img_71.pgm                    15.46
+data/uscsipi_images/img_0072.jpg                  data/outputs/uscsipi_horizontal_img_72.pgm                    60.38
+data/uscsipi_images/img_0073.jpg                  data/outputs/uscsipi_horizontal_img_73.pgm                    11.69
+data/uscsipi_images/img_0074.jpg                  data/outputs/uscsipi_horizontal_img_74.pgm                    11.72
+data/uscsipi_images/img_0075.jpg                  data/outputs/uscsipi_horizontal_img_75.pgm                    15.13
+data/uscsipi_images/img_0076.jpg                  data/outputs/uscsipi_horizontal_img_76.pgm                    12.14
+---------------------------------------------------------------------------------------------------------------------

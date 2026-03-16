@@ -192,7 +192,7 @@ int main(int argc, char **argv)
     double avgMs = records.empty() ? 0.0 : totalMs / records.size();
 
     // Write report
-    std::string reportPath = "data/outputs/report.txt";
+    std::string reportPath = "report.txt";
     std::ofstream report(reportPath);
     report << "Edge Detection Report\n";
     report << "=====================\n";
@@ -200,21 +200,21 @@ int main(int argc, char **argv)
     report << "Edge type : " << edgeType << "\n";
     report << "Images    : " << records.size() << "\n";
     report << "\n";
-    report << std::left
+    report << "Total time   : " << std::fixed << std::setprecision(2) << totalMs << " ms\n";
+    report << "Average/file : " << std::fixed << std::setprecision(2) << avgMs  << " ms\n";
+    report << std::string(30, '-') << "\n";
+    report << "\n";
+        report << std::left
            << std::setw(50) << "Input file"
            << std::setw(55) << "Output file"
            << std::right << std::setw(12) << "Time (ms)" << "\n";
-    report << "Total time   : " << std::fixed << std::setprecision(2) << totalMs << " ms\n";
-    report << "Average/file : " << std::fixed << std::setprecision(2) << avgMs  << " ms\n";
-    report << std::string(117, '-') << "\n";
-    report << "\n";
     for (const auto &r : records) {
         report << std::left
                << std::setw(50) << r.input
                << std::setw(55) << r.output
                << std::right << std::setw(12) << std::fixed << std::setprecision(2) << r.ms << "\n";
     }
-    report << std::string(117, '-') << "\n";
+    report << std::string(30, '-') << "\n";
     report.close();
 
     std::cout << "\nReport saved to: " << reportPath << std::endl;
