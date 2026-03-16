@@ -147,10 +147,11 @@ Output images are saved to `data/outputs/` as PGM files.
 After processing all images, the program automatically writes `data/outputs/report.txt`
 with a summary of the execution:
 
-- **Dataset** and **edge type** used
+- Dataset and edge type used
+- Total execution time (wall time of the full processing loop)
+- Average processing time per file
 - A table listing each input file, its corresponding output file, and the time it took to process in milliseconds
-- **Total execution time** (wall time of the full processing loop)
-- **Average processing time per file**
+
 
 The same totals are also printed to the console at the end of the run.
 
