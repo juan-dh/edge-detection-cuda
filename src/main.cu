@@ -1,8 +1,11 @@
 #include <iostream>
+#include <fstream>
+#include <iomanip>
 #include <vector>
 #include <algorithm>
 #include <string>
 #include <filesystem>
+#include <chrono>
 #include <cuda_runtime.h>
 #include <npp.h>
 #include <ImageIO.h>
@@ -120,8 +123,20 @@ int main(int argc, char **argv)
 
     std::sort(files.begin(), files.end());
 
+    // Timing and log data
+    struct FileRecord {
+        std::string input;
+        std::string output;
+        double ms;
+    };
+    std::vector<FileRecord> records;
+
+    auto totalStart = std::chrono::high_resolution_clock::now();
+
     for (const auto &path : files) {
         std::string sFilename = path.string();
+
+        auto fileStart = std::chrono::high_resolution_clock::now();
 
         // Load the bitmap using FreeImage
         FIBITMAP *pBitmap = loadImage(sFilename);
@@ -161,11 +176,50 @@ int main(int argc, char **argv)
         // Save the result as a PGM image
         std::string sResultFilename = std::string("data/outputs/") + dataset + "_" + edgeType + "_" + "img_" + std::to_string(i) + ".pgm";
         saveImage(sResultFilename, oHostDst);
-        std::cout << "Saved image: " << sResultFilename << std::endl;
 
+        auto fileEnd = std::chrono::high_resolution_clock::now();
+        double fileMs = std::chrono::duration<double, std::milli>(fileEnd - fileStart).count();
+
+        std::cout << "Saved image: " << sResultFilename
+                  << "  [" << std::fixed << std::setprecision(2) << fileMs << " ms]" << std::endl;
+
+        records.push_back({sFilename, sResultFilename, fileMs});
         i++;
-
     }
+
+    auto totalEnd = std::chrono::high_resolution_clock::now();
+    double totalMs = std::chrono::duration<double, std::milli>(totalEnd - totalStart).count();
+    double avgMs = records.empty() ? 0.0 : totalMs / records.size();
+
+    // Write report
+    std::string reportPath = "data/outputs/report.txt";
+    std::ofstream report(reportPath);
+    report << "Edge Detection Report\n";
+    report << "=====================\n";
+    report << "Dataset   : " << dataset << "\n";
+    report << "Edge type : " << edgeType << "\n";
+    report << "Images    : " << records.size() << "\n";
+    report << "\n";
+    report << std::left
+           << std::setw(50) << "Input file"
+           << std::setw(55) << "Output file"
+           << std::right << std::setw(12) << "Time (ms)" << "\n";
+    report << "Total time   : " << std::fixed << std::setprecision(2) << totalMs << " ms\n";
+    report << "Average/file : " << std::fixed << std::setprecision(2) << avgMs  << " ms\n";
+    report << std::string(117, '-') << "\n";
+    report << "\n";
+    for (const auto &r : records) {
+        report << std::left
+               << std::setw(50) << r.input
+               << std::setw(55) << r.output
+               << std::right << std::setw(12) << std::fixed << std::setprecision(2) << r.ms << "\n";
+    }
+    report << std::string(117, '-') << "\n";
+    report.close();
+
+    std::cout << "\nReport saved to: " << reportPath << std::endl;
+    std::cout << "Total time   : " << std::fixed << std::setprecision(2) << totalMs << " ms" << std::endl;
+    std::cout << "Average/file : " << std::fixed << std::setprecision(2) << avgMs  << " ms" << std::endl;
 
     return 0;
 }
